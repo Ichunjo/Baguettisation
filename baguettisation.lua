@@ -1,6 +1,6 @@
 script_name = "Baguettisation"
 script_description = "Remplace les tirets courts des dialogues en tirets longs et gère la marge auto"
-script_version = "1.1"
+script_version = "1.2"
 script_author="Vardë"
 
 function split(s, delimiter)
@@ -44,9 +44,8 @@ function dialogue(subs, sel, styles)
 				video_x, video_y = aegisub.video_size()
 
 				line.margin_l = (video_x/2) - round((width/2),0)
-				line.style = line.style .." - Dialogue"
+				line.style = "Default  - Dialogue"
 				-- Le Default - Dialogue doit être en an1 !
-
 				subs[i] = line
 			end
 		end
