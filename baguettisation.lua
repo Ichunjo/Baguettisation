@@ -1,6 +1,6 @@
 script_name = "Baguettisation"
 script_description = "Remplace les tirets courts des dialogues en tirets longs et gère la marge auto"
-script_version = "1.0"
+script_version = "1.1"
 script_author="Vardë"
 
 function split(s, delimiter)
@@ -12,12 +12,12 @@ function split(s, delimiter)
 end
 
 function round(num, numDecimalPlaces) 
-	local mult = 10^(numDecimalPlaces or 0)
+	mult = 10^(numDecimalPlaces or 0)
 	return math.floor(num * mult + 0.5) / mult
 end
 
-function recupStyle(subs)
-	local styles = { n = 0 }
+function dialogue(subs, sel, styles)
+	styles = { n = 0 }
 	for i, l in ipairs(subs) do
 		if l.class == "style" then
 			styles.n = styles.n + 1
@@ -26,16 +26,7 @@ function recupStyle(subs)
 			l.margin_v = l.margin_t
 		end
 	end
-	return styles
-end
 
-function dialogue(subs, sel, styles)
-	local video_x, video_y = aegisub.video_size()
-	local width, height, descent, extlead
-	local lineLaPlusLongue
-	local line
-	local xsplit
-	local cleantag
     for k, i in ipairs(sel) do
 		line = subs[i]
 		line.text = line.text:gsub("-", "–")
@@ -48,10 +39,14 @@ function dialogue(subs, sel, styles)
 				else
 					lineLaPlusLongue = xsplit[2]
 				end
+
 				width, height, descent, extlead = aegisub.text_extents(styles[line.style], lineLaPlusLongue)
+				video_x, video_y = aegisub.video_size()
+
 				line.margin_l = (video_x/2) - round((width/2),0)
-				line.style = "Default - Dialogue"
+				line.style = line.style .." - Dialogue"
 				-- Le Default - Dialogue doit être en an1 !
+
 				subs[i] = line
 			end
 		end
@@ -59,7 +54,6 @@ function dialogue(subs, sel, styles)
 end
 
 function baguettetisation(subs, sel)
-	local styles = recupStyle(subs)
 	dialogue(subs, sel, styles)
 end
 
