@@ -16,14 +16,6 @@ function round(num, numDecimalPlaces)
 	return math.floor(num * mult + 0.5) / mult
 end
 
-function franse(subs, sel)
-	for k, i in ipairs(sel) do
-		local line = subs[i]
-		line.text = line.text:gsub("- ", "– ")
-		subs[i] = line
-	end
-end
-
 function recupStyle(subs)
 	local styles = { n = 0 }
 	for i, l in ipairs(subs) do
@@ -45,27 +37,29 @@ function dialogue(subs, sel, styles)
 	local xsplit
 	local cleantag
     for k, i in ipairs(sel) do
-        line = subs[i]
-		if line.text:find("– ") then
+		line = subs[i]
+		line.text = line.text:gsub("-", "–")
+		if line.text:find("–%s") then
 			cleantag = line.text:gsub("{[^}]+}", "")
 			xsplit = split(cleantag, "\\N")
-			if #xsplit[1] >= #xsplit[2] then
-				lineLaPlusLongue = xsplit[1]
-			else
-				lineLaPlusLongue = xsplit[2]
+			if xsplit[2] ~= nil then
+				if #xsplit[1] >= #xsplit[2] then
+					lineLaPlusLongue = xsplit[1]
+				else
+					lineLaPlusLongue = xsplit[2]
+				end
+				width, height, descent, extlead = aegisub.text_extents(styles[line.style], lineLaPlusLongue)
+				line.margin_l = (video_x/2) - round((width/2),0)
+				line.style = "Default - Dialogue"
+				-- Le Default - Dialogue doit être en an1 !
+				subs[i] = line
 			end
-			width, height, descent, extlead = aegisub.text_extents(styles[line.style], lineLaPlusLongue)
-			line.margin_l = (video_x/2) - round((width/2),0)
-			line.style = "Default - Dialogue"
-			-- Le Default - Dialogue doit être en an1 !
-			subs[i] = line
 		end
 	end
 end
 
 function baguettetisation(subs, sel)
 	local styles = recupStyle(subs)
-	franse(subs, sel)
 	dialogue(subs, sel, styles)
 end
 
