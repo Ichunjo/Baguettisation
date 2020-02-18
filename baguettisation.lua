@@ -1,6 +1,6 @@
 script_name = "Baguettisation"
 script_description = "Remplace les tirets courts des dialogues en tirets longs et gère la marge auto"
-script_version = "1.2"
+script_version = "1.3"
 script_author="Vardë"
 
 function split(s, delimiter)
@@ -29,7 +29,7 @@ function dialogue(subs, sel, styles)
 
     for k, i in ipairs(sel) do
 		line = subs[i]
-		line.text = line.text:gsub("-", "–")
+		line.text = line.text:gsub("- ", "– ")
 		if line.text:find("–%s") then
 			cleantag = line.text:gsub("{[^}]+}", "")
 			xsplit = split(cleantag, "\\N")
