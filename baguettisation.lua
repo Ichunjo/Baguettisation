@@ -30,27 +30,22 @@ function dialogue(subs, sel, styles)
     for k, i in ipairs(sel) do
         line = subs[i]
 
-		-- Vérifications si CorrectPonc a déjà été placé
-		if line.text:find("– ") ~= nil then 
-			-- aegisub.log(5, "\nEspace insécable fine avec le tiret")
-			-- aegisub.log(5, "\n" .. line.text)
-			replace_space = true
-		else
-			replace_space = false
-		end
+        -- Vérifications si CorrectPonc a déjà été utilisé
+        if line.text:find("– ") ~= nil then 
+            replace_space = true
+        else
+            replace_space = false
+        end
 
-		-- Réinitialisation des lignes
+        -- Réinitialisation des lignes
         line.text = line.text:gsub("–", "-") -- Semi quadratin
         line.text = line.text:gsub("—", "-") -- Quadratin
-		line.text = line.text:gsub("- ", "- ") -- Espace insécable fine
-		-- aegisub.log(5, "\n" .. line.text)
-		-- aegisub.log(5, "coucou")
-		-- aegisub.log(5, line.text)
+        line.text = line.text:gsub("- ", "- ") -- Espace insécable fine
+        
         if string.sub(line.text, 1, 2) == "- " then
             line.text = line.text:gsub("- ", "– ")
             cleantag = line.text:gsub("{[^}]+}", "")
             split_line = split(cleantag, "\\N")
-			aegisub.log(5, "coucou2")
             if split_line[2] ~= nil then
                 if #split_line[1] >= #split_line[2] then
                     longest_line = split_line[1]
@@ -65,9 +60,9 @@ function dialogue(subs, sel, styles)
                 line.style = "Default - Dialogue"
                 -- Le Default - Dialogue doit être en an1 !
 
-				if replace_space then
-					line.text = line.text:gsub("– ", "– ")
-				end
+                if replace_space then
+                    line.text = line.text:gsub("– ", "– ")
+                end
 
                 subs[i] = line
             end
