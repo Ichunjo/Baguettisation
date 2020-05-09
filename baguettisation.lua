@@ -26,9 +26,10 @@ function dialogue(subs, sel, styles)
             l.margin_v = l.margin_t
         end
     end
-
     for k, i in ipairs(sel) do
         line = subs[i]
+        line.text = line.text:gsub("–", "-")
+        line.text = line.text:gsub("—", "-")
         if string.sub(line.text, 1, 2) == "- " then
             line.text = line.text:gsub("- ", "– ")
             cleantag = line.text:gsub("{[^}]+}", "")
