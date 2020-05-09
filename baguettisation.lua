@@ -29,8 +29,8 @@ function dialogue(subs, sel, styles)
 
     for k, i in ipairs(sel) do
 		line = subs[i]
-		line.text = line.text:gsub("- ", "– ")
-		if line.text:find("–%s") then
+		if string.sub(line.text, 1, 2) == "- " then
+			line.text = line.text:gsub("- ", "– ")
 			cleantag = line.text:gsub("{[^}]+}", "")
 			xsplit = split(cleantag, "\\N")
 			if xsplit[2] ~= nil then
