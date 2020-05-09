@@ -33,13 +33,13 @@ function dialogue(subs, sel, styles)
         -- Réinitialisation des lignes
         line.text = line.text:gsub("–", "-") -- Semi quadratin
         line.text = line.text:gsub("—", "-") -- Quadratin
-        line.text = line.text:gsub(" ", "☻") -- Espace insécable fine
+        -- line.text = line.text:gsub(" ", " ") -- Espace insécable fine
 
-        if string.sub(line.text, 1, 2) == "- " then
+        if string.sub(line.text, 1, 2) == "- " or string.sub(line.text, 1, 2) == "- " then
             line.text = line.text:gsub("- ", "– ")
             cleantag = line.text:gsub("{[^}]+}", "")
             split_line = split(cleantag, "\\N")
-            
+
             if split_line[2] ~= nil then
                 if #split_line[1] >= #split_line[2] then
                     longest_line = split_line[1]
@@ -53,8 +53,6 @@ function dialogue(subs, sel, styles)
                 line.margin_l = video_x / 2 - round(width / 2, 0)
                 line.style = "Default - Dialogue"
                 -- Le Default - Dialogue doit être en an1 !
-
-                line.text = line.text:gsub("☻", " ") -- Espace insécable fine
 
                 subs[i] = line
             end
