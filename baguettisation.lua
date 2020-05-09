@@ -26,10 +26,15 @@ function dialogue(subs, sel, styles)
             l.margin_v = l.margin_t
         end
     end
+
     for k, i in ipairs(sel) do
         line = subs[i]
-        line.text = line.text:gsub("–", "-")
-        line.text = line.text:gsub("—", "-")
+
+        -- Réinitialisation des lignes
+        line.text = line.text:gsub("–", "-") -- Semi quadratin
+        line.text = line.text:gsub("—", "-") -- Quadratin
+        line.text = line.text:gsub(" ", "☻") -- Espace insécable fine
+
         if string.sub(line.text, 1, 2) == "- " then
             line.text = line.text:gsub("- ", "– ")
             cleantag = line.text:gsub("{[^}]+}", "")
@@ -48,6 +53,9 @@ function dialogue(subs, sel, styles)
                 line.margin_l = video_x / 2 - round(width / 2, 0)
                 line.style = "Default - Dialogue"
                 -- Le Default - Dialogue doit être en an1 !
+
+                line.text = line.text:gsub("☻", " ") -- Espace insécable fine
+
                 subs[i] = line
             end
         end
