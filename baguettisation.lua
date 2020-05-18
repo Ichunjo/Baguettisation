@@ -16,7 +16,7 @@ function round(num, numDecimalPlaces)
     return math.floor(num * mult + 0.5) / mult
 end
 
-function dialogue(subs, sel, styles)
+function dialogue(subs, styles)
     styles = { n = 0 }
     for i, l in ipairs(subs) do
         if l.class == "style" then
@@ -27,7 +27,7 @@ function dialogue(subs, sel, styles)
         end
     end
 
-    for k, i in ipairs(sel) do
+    for i = 1, #subs, 1 do
         line = subs[i]
 
         -- Vérifications si CorrectPonc a déjà été utilisé
@@ -70,8 +70,8 @@ function dialogue(subs, sel, styles)
     end
 end
 
-function baguettetisation(subs, sel)
-    dialogue(subs, sel, styles)
+function baguettetisation(subs)
+    dialogue(subs, styles)
 end
 
 aegisub.register_macro(script_name,script_description,baguettetisation)
