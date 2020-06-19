@@ -1,7 +1,7 @@
-script_name="Baguettisation"
-script_description="Remplace les tirets courts des dialogues en tirets longs et gère la marge auto"
-script_version="1.5"
-script_author="Vardë"
+script_name = "Baguettisation"
+script_description = "Remplace les tirets courts des dialogues en tirets longs et gère la marge auto"
+script_version = "1.5"
+script_author = "Vardë"
 
 function split(s, delimiter)
     result = {};
