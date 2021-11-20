@@ -1,6 +1,6 @@
 script_name = "Baguettisation"
 script_description = "Remplace les tirets courts des dialogues en tirets longs et gère la marge auto"
-script_version = "1.51"
+script_version = "1.52"
 script_author = "Vardë"
 scrip_updated_by="slykhy"
 
@@ -38,14 +38,16 @@ function dialogue(subs, sel, styles)
             replace_space = false
         end
 
+        deleteItalique = line.text:gsub("{\\i1}", ""):gsub("{\\i0}", ""):gsub("{\\i}", ""):gsub("–", "-"):gsub("—", "-"):gsub("- ", "- "):gsub("- ", "– ")
+
         -- Réinitialisation des lignes
         line.text = line.text:gsub("–", "-") -- Semi quadratin
         line.text = line.text:gsub("—", "-") -- Quadratin
-        line.text = line.text:gsub("- ", "- ") -- Espace insécable fine
-        line.text = line.text:gsub("- ", "– ")
+        line.text = line.text:gsub("- ", "- "):gsub("-{\\i1} ", "- ") -- Espace insécable fine
+        line.text = line.text:gsub("- ", "– "):gsub("-{\\i1} ", "– ")
 
         -- Modifier si et seulement si la ligne commence par un tiret et contient un retour à la ligne suivi d'un 2e tiret 
-        if line.text:find("^–%s") and (line.text:find("\\N–%s") or line.text:find("\\N –%s")) then
+        if deleteItalique:find("^–%s") and (deleteItalique:find("\\N–%s") or deleteItalique:find("\\N –%s")) then
             cleantag = line.text:gsub("{[^}]+}", "")
             split_line = split(cleantag, "\\N")
             if split_line[2] ~= nil then
