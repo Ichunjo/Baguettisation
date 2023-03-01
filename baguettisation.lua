@@ -1,8 +1,10 @@
 script_name = "Baguettisation"
 script_description = "Remplace les tirets courts des dialogues en tirets longs et gère la marge auto"
-script_version = "1.54"
+script_version = "1.544"
 script_author = "Vardë"
 scrip_updated_by="slykhy"
+
+include("karaskel.lua")
 
 function split(s, delimiter)
     result = {};
@@ -19,6 +21,17 @@ end
 
 function dialogue(subs, sel, styles)
     styles = { n = 0 }
+    meta = karaskel.collect_head(subs)
+    
+    -- 384x288 est défini par défaut pour certaines versions Aegisub
+    if meta.res_x ~= 0 and meta.res_y ~= 0 and meta.res_x ~= 384 and meta.res_y ~= 288 then
+        video_x = meta.res_x
+        video_y = meta.res_y
+    else
+        aegisub.log("Erreur : Définir la résolution d\'image au script ou ouvrir une vidéo !")
+        return
+    end
+
     for i, l in ipairs(subs) do
         if l.class == "style" then
             styles.n = styles.n + 1
@@ -38,17 +51,13 @@ function dialogue(subs, sel, styles)
             replace_space = false
         end
 
-        deleteItalique = line.text:gsub("{\\i1}", ""):gsub("{\\i0}", ""):gsub("{\\i}", ""):gsub("–", "-"):gsub("—", "-"):gsub("- ", "- "):gsub("- ", "– ")
+         -- Réinitialisation des tirets
+        line.text = line.text:gsub("–", "-"):gsub("—", "-"):gsub("- ", "- "):gsub("- ", "– "):gsub("-{", "–{"):gsub("\\an8", "\\an7")
 
-        -- Réinitialisation des lignes
-        line.text = line.text:gsub("–", "-") -- Semi quadratin
-        line.text = line.text:gsub("—", "-") -- Quadratin
-        line.text = line.text:gsub("- ", "- "):gsub("-{\\i1} ", "- ") -- Espace insécable fine
-        line.text = line.text:gsub("- ", "– "):gsub("-{\\i1} ", "– ")
+        cleantag = line.text:gsub("{[^}]+}", "")
 
         -- Modifier si et seulement si la ligne commence par un tiret et contient un retour à la ligne suivi d'un 2e tiret 
-        if deleteItalique:find("^–%s") and (deleteItalique:find("\\N–%s") or deleteItalique:find("\\N –%s")) then
-            cleantag = line.text:gsub("{[^}]+}", "")
+        if cleantag:find("^–%s") and (cleantag:find("\\N–%s") or cleantag:find("\\N –%s")) then
             split_line = split(cleantag, "\\N")
             if split_line[2] ~= nil then
                 if #split_line[1] >= #split_line[2] then
@@ -57,15 +66,20 @@ function dialogue(subs, sel, styles)
                     longest_line = split_line[2]
                 end
 
-                width, height, descent, extlead = aegisub.text_extents(styles[line.style], longest_line)
-                video_x, video_y = subs.script_resolution() or aegisub.video_size()
+                width = aegisub.text_extents(styles[line.style], longest_line)
                 line.margin_l = video_x / 2 - round(width / 2, 0)
 
-                if styles[line.style].align == 8 then
-                    line.text = '{\\an7}' .. line.text
+                -- Adapté aux styles de CR
+                if styles[line.style].align == 8 and line.style == "Italique" then
+                    line.text = "{\\an7}" .. line.text
+                    line.style = "TiretsItalique"
+                elseif styles[line.style].align == 8 and line.style == "Default" then
+                    line.text = "{\\an7}" .. line.text
+                    line.style = "TiretsDefault"
+                elseif line.style == "Italique" or line.style == "TiretsItalique" then
+                    line.style = "TiretsItalique"
                 else
-                    -- Le Default - Dialogue doit être en an1 !
-                    line.style = "Default - Dialogue"
+                    line.style = "TiretsDefault"
                 end
 
                 if replace_space then
